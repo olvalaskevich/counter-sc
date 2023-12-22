@@ -21,7 +21,7 @@ let initialState:InitialStateType={
 export const counterReducer=(state:InitialStateType=initialState, action:CounterActionType)=>{
     switch (action.type){
         case 'INC-COUNTER':
-             return {...state, count: ++action.c}
+            return {...state, count: ++action.c}
         case 'SET-MAXVALUE':
             return {...state, maxValue: action.c}
         case 'SET-STARTVALUE':
@@ -52,4 +52,8 @@ export const startValueAC=(c:number)=>{
 
 export const resetCounterAC=()=>{
     return {type: 'RESET_COUNTER'}
+}
+
+export const hardResetCounterAC=()=>{
+    return {type: 'HARD-RESET'}
 }
