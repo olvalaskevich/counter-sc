@@ -1,5 +1,4 @@
 
-
 type CounterActionType={
     type:string
     c:number
