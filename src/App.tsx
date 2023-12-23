@@ -2,8 +2,17 @@ import './App.css';
 import {Button} from "./Button";
 import styled from "styled-components";
 import {Display} from "./Display";
-import {useState} from "react";
 import {DisplaySettings} from "./DisplaySettings";
+import {useDispatch, useSelector} from "react-redux";
+import {RootStateType} from "./store";
+import {
+    hardResetCounterAC,
+    incCounterAC,
+    InitialStateType,
+    maxValueAC,
+    resetCounterAC,
+    settingsAC, startValueAC
+} from "./counter-reducer";
 
 type WrapperPropsType={
     width?:string,
@@ -15,12 +24,12 @@ function App() {
 
 
 
-    let [count, setCount]=useState(0)
-    let [setting, setSetting]=useState(false)
-    let [maxValue, setMaxValue]=useState<number>()
-    let [startValue, setStartValue]=useState<number>()
-    let [preDataMaxValue, setPreDataMaxValue]=useState<Array<number>>([])
-    let [preDataStartValue, setPreDataStartValue]=useState<Array<number>>([])
+    // let [count, setCount]=useState(0)
+    // let [setting, setSetting]=useState(false)
+    // let [maxValue, setMaxValue]=useState<number>()
+    // let [startValue, setStartValue]=useState<number>()
+    // let [preDataMaxValue, setPreDataMaxValue]=useState<Array<number>>([])
+    // let [preDataStartValue, setPreDataStartValue]=useState<Array<number>>([])
 
 
     // useEffect(()=>{
@@ -40,61 +49,67 @@ function App() {
     //
     // }, [count, maxValue, startValue])
 
+    let counted=useSelector<RootStateType, InitialStateType>((state)=>state.counter as InitialStateType)
+    let dispatch= useDispatch()
 
     function incCounter(c:number) {
-        if (maxValue){
-        if (c < maxValue) {
-            setCount(++c)
-        }} else setCount(++c)
+        if (counted.maxValue){
+        if (c < counted.maxValue) {
+            dispatch(incCounterAC(c))
+        }} else dispatch(incCounterAC(c))
     }
     function resetCounter() {
-        if (startValue) {
-            setCount(startValue)}
+        if (counted.startValue) {
+            dispatch(resetCounterAC())}
         else
-            setCount(0)
+            dispatch(hardResetCounterAC())
 
     }
 
     function settings() {
-        setSetting(!setting)
-        if (startValue&&maxValue) {
-            setCount(startValue)
-            setPreDataMaxValue([...preDataMaxValue, maxValue])
-            setPreDataStartValue([...preDataStartValue, startValue])
+        dispatch(settingsAC())
+        if (counted.startValue&&counted.maxValue) {
+            dispatch(maxValueAC(counted.maxValue))
+            dispatch(startValueAC(counted.startValue))
+
+
+            // setPreDataMaxValue([...preDataMaxValue, maxValue])
+            // setPreDataStartValue([...preDataStartValue, startValue])
+
         }
 
     }
 
     function changeMaxHandler(c:number){
-        setMaxValue(c)
+        dispatch(maxValueAC(c))
     }
     function changeStartHandler(c:number){
-        setStartValue(c)
+        dispatch(startValueAC(c))
     }
 
     return (
         <div className="App">
             <Wrapper>
-                {!setting?
-                    <Display count={count} maxValue={maxValue}/>
+                {!counted.setting?
+                    <Display count={counted.count} maxValue={counted.maxValue}/>
                     :
-                    <DisplaySettings maxValue={maxValue}
-                                     startValue={startValue}
-                                     preDataMaxValue={preDataMaxValue}
-                                     preDataStartValue={preDataStartValue}
+                    <DisplaySettings maxValue={counted.maxValue}
+                                     startValue={counted.startValue}
+                                     // preDataMaxValue={preDataMaxValue}
+                                     // preDataStartValue={preDataStartValue}
                                      changeMaxHandler={changeMaxHandler}
                                      changeStartHandler={changeStartHandler}/>}
 
 
                 <Wrapper width={'380px'} direction={'row'}>
-                    {!setting ?
+                    {!counted.setting ?
                         <>
-                            <Button text={'inc'} count={count} maxValue={maxValue} funcCounter={incCounter}/>
-                            <Button text={'reset'} count={count} funcCounter={resetCounter}/>
-                            <Button text={'set'} count={count} funcCounter={settings}/>
+                            <Button text={'inc'} count={counted.count} maxValue={counted.maxValue} funcCounter={incCounter}/>
+                            <Button text={'reset'} count={counted.count} funcCounter={resetCounter}/>
+                            <Button text={'set'} count={counted.count} funcCounter={settings}/>
                         </>
                         :
-                        <Button text={'set'} count={count} funcCounter={settings}/>}
+                        <Button text={'set'} count={counted.count} funcCounter={settings}/>}
                 </Wrapper>
 
             </Wrapper>
