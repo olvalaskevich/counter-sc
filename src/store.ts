@@ -6,6 +6,11 @@ const rootReducer=combineReducers({
     counter:counterReducer
 })
 
+let preloadedState=JSON.parse(localStorage.getItem("counter") as string)
+export const store=createStore(rootReducer,preloadedState)
+
+store.subscribe(()=>{
+    localStorage.setItem("counter", JSON.stringify(store.getState().counter))
+})
 
 export type RootStateType=ReturnType<typeof rootReducer>
-export const store=createStore(rootReducer)
